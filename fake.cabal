@@ -1,0 +1,60 @@
+cabal-version:      3.0
+name:               fake
+version:            0.1.0.0
+synopsis:           A minimalist Haskell faker library for generating fake data
+description:
+  A pure, composable Haskell faker library that emphasizes purity, composability, minimal dependencies, and ease of use.
+license:            MIT
+author:             Francis Sunday
+build-type:         Simple
+
+common warnings
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
+
+library
+  import:           warnings
+  exposed-modules:
+    Fake
+    Fake.Core
+    Fake.Primitives
+    Fake.Combinators
+    Fake.Person
+    Fake.Internet
+    Fake.Address
+    Fake.Data.Loader
+  build-depends:
+    base >=4.16 && <5,
+    containers >=0.6,
+    bytestring >=0.11,
+    text >=1.2,
+    mtl >=2.2,
+    random >=1.2,
+    filepath >=1.4
+  hs-source-dirs:   src
+  default-language: Haskell2010
+
+test-suite fake-hs-test
+  import:           warnings
+  type:             exitcode-stdio-1.0
+  main-is:          Main.hs
+  other-modules:
+    Fake.CoreTest
+    Fake.PrimitivesTest
+    Fake.InternetTest
+    Fake.AddressTest
+  build-depends:
+    base >=4.16 && <5,
+    fake,
+    hspec >=2.9,
+    QuickCheck >=2.14
+  hs-source-dirs:   tests
+  default-language: Haskell2010
+
+executable faker-example
+  import:           warnings
+  main-is:          Main.hs
+  build-depends:
+    base >=4.16 && <5,
+    fake
+  hs-source-dirs:   examples
+  default-language: Haskell2010
