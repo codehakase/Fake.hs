@@ -77,4 +77,19 @@ elements xs = do
     return $ xs !! idx
 
 shuffle :: [a] -> Fake [a]
-shuffle xs = return xs
+shuffle [] = return []
+shuffle xs = do
+  -- Fisher-Yates shuffle algorithm
+  let len = length xs
+  shuffleHelper xs len
+  where
+    shuffleHelper ys 0 = return ys
+    shuffleHelper ys n = do
+      idx <- integerRange 0 (n - 1)
+      let (left, right) = splitAt idx ys
+      let (a, b) = case right of
+            [] -> error "shuffle: internal error"
+            (x:rest) -> (x, left ++ rest)
+          newYs = a : b
+      shuffleHelper newYs (n - 1)
+

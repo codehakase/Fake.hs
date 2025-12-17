@@ -38,3 +38,43 @@ primitivesTests = describe "Faker.Primitives" $ do
   it "elements picks from list" $ do
     let val = runFakerSeed 333 (elements [1, 2, 3, 4, 5 :: Int])
     val `shouldSatisfy` (`elem` [1, 2, 3, 4, 5])
+
+  it "shuffle maintains all elements" $ do
+    let original = [1, 2, 3, 4, 5 :: Int]
+    let shuffled = runFakerSeed 400 (shuffle original)
+    length shuffled `shouldBe` length original
+    all (\x -> elem x shuffled) original `shouldBe` True
+
+  it "shuffle empty list returns empty list" $ do
+    let shuffled = runFakerSeed 401 (shuffle ([] :: [Int]))
+    shuffled `shouldBe` []
+
+  it "shuffle single element returns single element" $ do
+    let shuffled = runFakerSeed 402 (shuffle [42 :: Int])
+    shuffled `shouldBe` [42]
+
+  it "shuffle two elements produces random order" $ do
+    let original = [1, 2 :: Int]
+    let shuffled1 = runFakerSeed 403 (shuffle original)
+    let shuffled2 = runFakerSeed 404 (shuffle original)
+    -- At least one of them should be different from original
+    (shuffled1 /= original || shuffled2 /= original) `shouldBe` True
+
+  it "shuffle produces deterministic results with same seed" $ do
+    let original = [1, 2, 3, 4, 5 :: Int]
+    let shuffled1 = runFakerSeed 405 (shuffle original)
+    let shuffled2 = runFakerSeed 405 (shuffle original)
+    shuffled1 `shouldBe` shuffled2
+
+  it "shuffle with different seeds produces different results" $ do
+    let original = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10 :: Int]
+    let shuffled1 = runFakerSeed 406 (shuffle original)
+    let shuffled2 = runFakerSeed 407 (shuffle original)
+    -- Very unlikely to be the same with different seeds and list of 10 elements
+    shuffled1 /= shuffled2 `shouldBe` True
+
+  it "shuffle with strings maintains all elements" $ do
+    let original = ["apple", "banana", "cherry", "date"]
+    let shuffled = runFakerSeed 408 (shuffle original)
+    length shuffled `shouldBe` length original
+    all (\x -> elem x shuffled) original `shouldBe` True
