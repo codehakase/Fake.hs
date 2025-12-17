@@ -1,6 +1,7 @@
 module Fake.PrimitivesTest (primitivesTests) where
 
 import Test.Hspec
+import Control.Exception (evaluate, ErrorCall(..))
 import Fake
 
 primitivesTests :: Spec
@@ -78,3 +79,49 @@ primitivesTests = describe "Faker.Primitives" $ do
     let shuffled = runFakerSeed 408 (shuffle original)
     length shuffled `shouldBe` length original
     all (\x -> elem x shuffled) original `shouldBe` True
+
+  it "doubleInRange stays within bounds" $ do
+    let vals = [runFakerSeed (n*100) (doubleInRange 0.99 999.99) | n <- [1..20]]
+    all (\v -> v >= 0.99 && v <= 999.99) vals `shouldBe` True
+
+  it "doubleInRange with negative range stays within bounds" $ do
+    let vals = [runFakerSeed (n*100) (doubleInRange (-50.0) 50.0) | n <- [1..20]]
+    all (\v -> v >= (-50.0) && v <= 50.0) vals `shouldBe` True
+
+  it "doubleInRange with fractional range stays within bounds" $ do
+    let vals = [runFakerSeed (n*100) (doubleInRange 0.0 1.0) | n <- [1..20]]
+    all (\v -> v >= 0.0 && v <= 1.0) vals `shouldBe` True
+
+  it "doubleInRange produces deterministic results with same seed" $ do
+    let val1 = runFakerSeed 500 (doubleInRange 1.0 100.0)
+    let val2 = runFakerSeed 500 (doubleInRange 1.0 100.0)
+    val1 `shouldBe` val2
+
+  it "doubleInRange with different seeds produces different values" $ do
+    let val1 = runFakerSeed 501 (doubleInRange 0.0 1000.0)
+    let val2 = runFakerSeed 502 (doubleInRange 0.0 1000.0)
+    val1 /= val2 `shouldBe` True
+
+  it "floatInRange stays within bounds" $ do
+    let vals = [runFakerSeed (n*100) (floatInRange 0.5 99.5) | n <- [1..20]]
+    all (\v -> v >= 0.5 && v <= 99.5) vals `shouldBe` True
+
+  it "floatInRange with negative range stays within bounds" $ do
+    let vals = [runFakerSeed (n*100) (floatInRange (-100.0) 100.0) | n <- [1..20]]
+    all (\v -> v >= (-100.0) && v <= 100.0) vals `shouldBe` True
+
+  it "floatInRange produces deterministic results with same seed" $ do
+    let val1 = runFakerSeed 600 (floatInRange 10.0 20.0)
+    let val2 = runFakerSeed 600 (floatInRange 10.0 20.0)
+    val1 `shouldBe` val2
+
+  it "floatInRange with different seeds produces different values" $ do
+    let val1 = runFakerSeed 601 (floatInRange 0.0 100.0)
+    let val2 = runFakerSeed 602 (floatInRange 0.0 100.0)
+    val1 /= val2 `shouldBe` True
+
+  it "doubleInRange errors when lo > hi" $ do
+    evaluate (runFakerSeed 700 (doubleInRange 100.0 10.0)) `shouldThrow` anyErrorCall
+
+  it "floatInRange errors when lo > hi" $ do
+    evaluate (runFakerSeed 701 (floatInRange 100.0 10.0)) `shouldThrow` anyErrorCall

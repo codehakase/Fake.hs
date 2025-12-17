@@ -4,6 +4,8 @@ module Fake.Primitives (
     natural,
     float,
     double,
+    floatInRange,
+    doubleInRange,
     bool,
     char,
     alpha,
@@ -35,6 +37,20 @@ float = liftState $ state random
 
 double :: Fake Double
 double = liftState $ state random
+
+doubleInRange :: Double -> Double -> Fake Double
+doubleInRange lo hi
+    | lo > hi = error "doubleInRange: lo > hi"
+    | otherwise = do
+        val <- double
+        return $ lo + val * (hi - lo)
+
+floatInRange :: Float -> Float -> Fake Float
+floatInRange lo hi
+    | lo > hi = error "floatInRange: lo > hi"
+    | otherwise = do
+        val <- float
+        return $ lo + val * (hi - lo)
 
 bool :: Fake Bool
 bool = liftState $ state random
