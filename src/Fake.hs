@@ -25,12 +25,10 @@ module Fake (
     maybeGen,
     oneof,
     filterGen,
-    mapGen,
 ) where
 
 import Fake.Combinators (
     filterGen,
-    mapGen,
     maybeGen,
     oneof,
     vector,

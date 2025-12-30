@@ -5,7 +5,6 @@ module Fake.Combinators (
     maybeGen,
     oneof,
     filterGen,
-    mapGen,
 ) where
 
 import Fake.Core (Fake)
@@ -48,6 +47,3 @@ filterGen p gen = do
     if p val
         then return val
         else filterGen p gen
-
-mapGen :: (a -> b) -> Fake a -> Fake b
-mapGen f gen = f <$> gen
