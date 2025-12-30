@@ -6,7 +6,6 @@ module Fake.Combinators (
     oneof,
     filterGen,
     mapGen,
-    flatMap,
 ) where
 
 import Fake.Core (Fake)
@@ -52,6 +51,3 @@ filterGen p gen = do
 
 mapGen :: (a -> b) -> Fake a -> Fake b
 mapGen f gen = f <$> gen
-
-flatMap :: (a -> Fake b) -> Fake a -> Fake b
-flatMap f gen = gen >>= f

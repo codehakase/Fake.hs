@@ -93,7 +93,7 @@ Three execution modes:
 ### Combinators
 - Repetition: `vector`, `vectorOf`, `sequence`
 - Optionality: `maybeGen`, `oneof`
-- Functional: `filterGen`, `mapGen`, `flatMap`
+- Functional: `filterGen`, `mapGen`
 
 ### Person
 - Names: `firstName`, `lastName`, `fullName`, `name`
