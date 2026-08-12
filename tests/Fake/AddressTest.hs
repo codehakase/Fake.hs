@@ -3,6 +3,7 @@ module Fake.AddressTest (addressTests) where
 import Test.Hspec
 import Fake
 import qualified Fake.Address as Address
+import Data.List (nub)
 
 addressTests :: Spec
 addressTests = describe "Faker.Address" $ do
@@ -38,7 +39,3 @@ addressTests = describe "Faker.Address" $ do
   it "multiple cities are different" $ do
     let cities = [runFakerSeed (n*100) Address.city | n <- [1..5]]
     length (nub cities) `shouldSatisfy` (> 1)
-
-nub :: Eq a => [a] -> [a]
-nub [] = []
-nub (x:xs) = x : nub (filter (/= x) xs)

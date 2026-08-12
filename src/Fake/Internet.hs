@@ -35,14 +35,10 @@ username = do
     first <- firstName
     lname <- lastName
     sep <- elements [".", "_", ""]
-    let combined = map toLower first ++ sep ++ map toLower lname
-    return combined
+    return $ map toLower first ++ sep ++ map toLower lname
 
 domain :: Fake String
-domain = do
-    name <- firstName
-    suffix <- domainSuffix
-    return $ map toLower name ++ "." ++ suffix
+domain = (\n suffix -> map toLower n ++ "." ++ suffix) <$> firstName <*> domainSuffix
 
 domainSuffix :: Fake String
 domainSuffix = elements ["com", "org", "net", "edu", "gov", "co.uk"]
@@ -54,14 +50,11 @@ url = do
     return $ "https://" ++ dom ++ "/" ++ path
 
 slug :: Fake String
-slug = do
-    wordList <- vectorOf (1, 3) wordSlug
-    return $ unwords wordList
+slug = unwords <$> vectorOf (1, 3) wordSlug
   where
     wordSlug = do
         len <- integerRange 3 10
-        word <- string len
-        return $ map toLower word
+        map toLower <$> string len
 
 freeDomains :: [String]
 freeDomains =

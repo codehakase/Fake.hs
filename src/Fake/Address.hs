@@ -8,6 +8,7 @@ module Fake.Address (
     longitude,
 ) where
 
+import Control.Monad (replicateM)
 import Fake.Core (Fake)
 import Fake.Primitives (double, elements, numeric)
 
@@ -21,22 +22,16 @@ countryCode :: Fake String
 countryCode = elements countryCodes
 
 postalCode :: Fake String
-postalCode = do
-    digits <- sequence $ replicate 5 numeric
-    return digits
+postalCode = replicateM 5 numeric
 
 zipCode :: Fake String
 zipCode = postalCode
 
 latitude :: Fake Double
-latitude = do
-    d <- double
-    return $ (d * 180) - 90
+latitude = subtract 90 . (* 180) <$> double
 
 longitude :: Fake Double
-longitude = do
-    d <- double
-    return $ (d * 360) - 180
+longitude = subtract 180 . (* 360) <$> double
 
 cities :: [String]
 cities =

@@ -15,9 +15,7 @@ newtype Fake a = Fake (State StdGen a)
     deriving (Functor, Applicative, Monad)
 
 runFaker :: Fake a -> IO a
-runFaker (Fake computation) = do
-    gen <- initStdGen
-    return $ evalState computation gen
+runFaker (Fake computation) = evalState computation <$> initStdGen
 
 runFakerSeed :: Int -> Fake a -> a
 runFakerSeed seed (Fake computation) =
@@ -28,4 +26,4 @@ runFakerWith :: StdGen -> Fake a -> a
 runFakerWith gen (Fake computation) = evalState computation gen
 
 liftState :: State StdGen a -> Fake a
-liftState st = Fake st
+liftState = Fake

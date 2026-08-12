@@ -17,6 +17,7 @@ module Fake.Primitives (
     shuffle,
 ) where
 
+import Control.Monad (replicateM)
 import Control.Monad.State (state)
 import Fake.Core (Fake, liftState)
 import System.Random (random, randomR)
@@ -28,9 +29,7 @@ integerRange :: Int -> Int -> Fake Int
 integerRange lo hi = liftState $ state (randomR (lo, hi))
 
 natural :: Fake Int
-natural = do
-    n <- integer
-    return $ abs n
+natural = abs <$> integer
 
 float :: Fake Float
 float = liftState $ state random
@@ -38,19 +37,18 @@ float = liftState $ state random
 double :: Fake Double
 double = liftState $ state random
 
-doubleInRange :: Double -> Double -> Fake Double
-doubleInRange lo hi
-    | lo > hi = error "doubleInRange: lo > hi"
+scaledRange :: (Ord a, Num a) => Fake a -> a -> a -> Fake a
+scaledRange gen lo hi
+    | lo > hi = error "scaledRange: lo > hi"
     | otherwise = do
-        val <- double
+        val <- gen
         return $ lo + val * (hi - lo)
 
+doubleInRange :: Double -> Double -> Fake Double
+doubleInRange = scaledRange double
+
 floatInRange :: Float -> Float -> Fake Float
-floatInRange lo hi
-    | lo > hi = error "floatInRange: lo > hi"
-    | otherwise = do
-        val <- float
-        return $ lo + val * (hi - lo)
+floatInRange = scaledRange float
 
 bool :: Fake Bool
 bool = liftState $ state random
@@ -59,24 +57,16 @@ char :: Fake Char
 char = liftState $ state random
 
 alpha :: Fake Char
-alpha = do
-    let alphas = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    elements alphas
+alpha = elements "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 numeric :: Fake Char
-numeric = do
-    let digits = "0123456789"
-    elements digits
+numeric = elements "0123456789"
 
 alphanumeric :: Fake Char
-alphanumeric = do
-    let chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    elements chars
+alphanumeric = elements "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 string :: Int -> Fake String
-string n
-    | n <= 0 = return ""
-    | otherwise = sequence $ replicate n alphanumeric
+string n = replicateM n alphanumeric
 
 stringBounded :: (Int, Int) -> Fake String
 stringBounded (minLen, maxLen)

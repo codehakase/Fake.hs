@@ -54,9 +54,4 @@ data User = User
   } deriving (Show)
 
 generateUser :: Fake User
-generateUser = do
-  n <- Person.fullName
-  e <- Internet.email
-  a <- integerRange 18 80
-  c <- Address.city
-  return $ User n e a c
+generateUser = User <$> Person.fullName <*> Internet.email <*> integerRange 18 80 <*> Address.city

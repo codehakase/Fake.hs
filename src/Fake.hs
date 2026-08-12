@@ -21,7 +21,6 @@ module Fake (
     shuffle,
     vector,
     vectorOf,
-    Fake.Combinators.sequence,
     maybeGen,
     oneof,
     filterGen,
@@ -34,7 +33,6 @@ import Fake.Combinators (
     vector,
     vectorOf,
  )
-import qualified Fake.Combinators
 import Fake.Core (Fake, runFaker, runFakerSeed, runFakerWith)
 import Fake.Primitives (
     alpha,
